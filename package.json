@@ -1,0 +1,69 @@
+{
+  "name": "@decentralized-identity/ion-cli",
+  "description": "A Command Line Interface (CLI) to make working with the ION network and using ION DIDs easy peasy lemon squeezy.",
+  "version": "0.1.0",
+  "author": "Decentralized Identity Foundation",
+  "bin": {
+    "ion": "./bin/run"
+  },
+  "dependencies": {
+    "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
+    "@oclif/plugin-help": "^3.2.3",
+    "clear": "^0.1.0",
+    "tslib": "^1.14.1",
+    "@decentralized-identity/ion-tools": "0.1.0",
+    "cli-ux": "5.6.3"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.26.0",
+    "@types/node": "^10.17.60",
+    "eslint": "^5.16.0",
+    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif-typescript": "^0.1.0",
+    "globby": "^10.0.2",
+    "rimraf": "^3.0.2",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.10"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "bugs": {
+    "url": "https://github.com/decentralized-identity/ion-cli/issues"
+  },
+  "homepage": "https://github.com/decentralized-identity/ion-cli#readme",
+  "keywords": [
+    "ION",
+    "decentralized",
+    "identity",
+    "cli"
+  ],
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "ion",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/decentralized-identity/ion-cli.git"
+  },
+  "scripts": {
+    "postpack": "rimraf oclif.manifest.json",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "rimraf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "test": "echo NO TESTS",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "types": "lib/index.d.ts"
+}
