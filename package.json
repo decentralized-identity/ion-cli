@@ -59,9 +59,9 @@
     "url": "git+https://github.com/decentralized-identity/ion-cli.git"
   },
   "scripts": {
-    "postpack": "rimraf oclif.manifest.json",
+    "postpack": "rm -rf oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "rimraf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "test": "echo NO TESTS",
     "version": "oclif-dev readme && git add README.md"
   },
