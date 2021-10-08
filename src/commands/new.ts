@@ -1,18 +1,18 @@
 import {Command, flags} from '@oclif/command'
+import Package from '../Package';
 const ION = require('@decentralized-identity/ion-tools');
 const { cli } = require('cli-ux');
-const fs = require('fs/promises');
-const path = require('path');
 
 export default class New extends Command {
-  static description = 'Creates a new ION DID, optionally publishes to the network and writes the key pair to a *.jwk file and the DID to a *.json file.'
+  static description = 'Creates a new ION DID, optionally publishes to the network and writes the private key a *.jwk file and the DID to a *.json file.'
 
   static examples = [
-    `$ ion new`,
-    `$ ion new -d d:/dids`,
-    `$ ion new -d d:/dids -c secp256k1`,
-    `$ ion new -d d:/dids -c secp256k1 -p`,
-    `$ ion new -d d:/dids -c secp256k1 -p -n https://node.local/1.0/identifiers/ `,
+    `$ ion new FriendlyName`,
+    `$ ion new FriendlyName -d d:/dids`,
+    `$ ion new FriendlyName -d d:/dids -c secp256k1`,
+    `$ ion new FriendlyName -d d:/dids -c secp256k1 -p`,
+    `$ ion new FriendlyName -d d:/dids -c secp256k1 -p -n https://node.local/1.0/identifiers/ `,
+    `$ ion new FriendlyName -d d:/dids -c secp256k1 -p -n https://node.local/1.0/identifiers/ -k key-1`,
   ]
 
   static flags = {
@@ -27,16 +27,32 @@ export default class New extends Command {
     // Flag for specifying a directory to which keys and documents should be saved
     directory: flags.string({char: 'd', description: 'to which to save the *jwk and *.json files.'}),
 
+    // Flag for specifying key pair identifier
+    kid: flags.string({char: 'k', description: ' for the key pair', default: 'key-1'}),
+
     // Flag for specifying the node to use for resolving DIDs.
     node: flags.string({char: 'n', description: `URI of the node you desire to contact for resolution. If you are running your own node, use this to pass in your node's resolution endpoint.`}),
   }
+  
+  static args = [
+    {
+      name: 'name',
+      required: true,
+      description: 'name for the new DID. Name should not include spaces or special characters.'
+    }
+  ]
+
 
   async run() {
-    const { flags } = this.parse(New)
+    const { args, flags } = this.parse(New)
 
     // Create the key pair for the new DID
     cli.action.start('Generating key pair');
-    let keyPair = await ION.generateKeyPair(flags.curve);
+    const keyPair = await ION.generateKeyPair(flags.curve);
+
+    // Mix in the kid
+    const privateKey = Object.assign({ kid: flags.kid }, keyPair.privateJwk);
+
     cli.action.stop();
     console.log(
       keyPair
@@ -48,11 +64,11 @@ export default class New extends Command {
       content: {
         publicKeys: [
           {
-            id: 'key-1',
+            id: flags.kid,
             type: 'EcdsaSecp256k1VerificationKey2019',
             publicKeyJwk: keyPair.publicJwk,
-            purposes: [ 'authentication' ]
-          }
+            purposes: [ 'authentication', 'keyAgreement' ]
+          },
         ]
       }
     });
@@ -64,7 +80,7 @@ export default class New extends Command {
       cli.action.stop();
     }
 
-    const didDocument = await ION.resolve(await did.getURI());
+    const didDocument = await ION.resolve(await did.getURI(), options);
     cli.action.stop();
     console.log(didDocument);
 
@@ -81,27 +97,10 @@ export default class New extends Command {
     // If a directory has been specified, save the
     // keys and document to the directory to the directory.
     if (flags.directory) {
-      // Use the did suffix as the folder name.
-      const suffix = await did.getSuffix();
-
-      // This will also create the specified directory if
-      // it does not exist.
-      const basePath = path.join(flags.directory, `/${suffix}`);
-      cli.action.start(`Creating file path ${basePath}`);
-      await fs.mkdir(basePath, { recursive: true });
-      cli.action.stop();
-
-      // Write the key file.
-      fs.mkdir(`${basePath}/keys`)
-      const jwkFile = path.join(basePath, `/keys/key-1.jwk`);
-      cli.action.start(`Saving key to ${jwkFile}`);
-      await fs.writeFile(jwkFile, JSON.stringify(keyPair, null, 2));
-      cli.action.stop();
-
-      // Write the DID document.
-      const didDocumentFile = path.join(basePath, 'document.json');
-      cli.action.start(`Saving DID document to ${didDocumentFile}`);
-      await fs.writeFile(didDocumentFile, JSON.stringify(didDocument, null, 2));
+      cli.action.start(`Creating DID package with name '${args.name}' and saving to directory path '${flags.directory}.`);
+      // Create a new package
+      const didPackage = new Package(args.name, didDocument, privateKey);
+      await didPackage.savePackage(flags.directory);
       cli.action.stop();
     }
   }
