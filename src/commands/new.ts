@@ -2,8 +2,6 @@ import {Command, flags} from '@oclif/command'
 import Package from '../Package';
 const ION = require('@decentralized-identity/ion-tools');
 const { cli } = require('cli-ux');
-const fs = require('fs/promises');
-const path = require('path');
 
 export default class New extends Command {
   static description = 'Creates a new ION DID, optionally publishes to the network and writes the private key a *.jwk file and the DID to a *.json file.'

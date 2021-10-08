@@ -1,7 +1,5 @@
 import {Command, flags} from '@oclif/command';
 import cli from 'cli-ux';
-import * as fs from 'fs/promises';
-import * as path from 'path';
 import Package from '../Package';
 
 const ION = require('@decentralized-identity/ion-tools');
