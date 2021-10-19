@@ -18,7 +18,7 @@ $ npm install -g @decentralized-identity/ion-cli
 $ ion COMMAND
 running command...
 $ ion (-v|--version|version)
-@decentralized-identity/ion-cli/0.2.0 win32-x64 node-v14.17.6
+@decentralized-identity/ion-cli/0.3.0 win32-x64 node-v14.17.6
 $ ion --help [COMMAND]
 USAGE
   $ ion COMMAND
@@ -28,10 +28,15 @@ USAGE
 # Commands
 <!-- commands -->
 * [`ion help [COMMAND]`](#ion-help-command)
+* [`ion key:new [KID]`](#ion-keynew-kid)
+* [`ion key:public JWK`](#ion-keypublic-jwk)
+* [`ion load NAME`](#ion-load-name)
 * [`ion new NAME`](#ion-new-name)
+* [`ion operation:create KEY [SERVICES]`](#ion-operationcreate-key-services)
+* [`ion publish INITIALSTATE`](#ion-publish-initialstate)
 * [`ion resolve DID`](#ion-resolve-did)
 * [`ion sign PAYLOAD FRIENDLYNAME`](#ion-sign-payload-friendlyname)
-* [`ion verify JWS FRIENDLYNAME [PAYLOAD]`](#ion-verify-jws-friendlyname-payload)
+* [`ion verify JWS DOCUMENT [PAYLOAD]`](#ion-verify-jws-document-payload)
 
 ## `ion help [COMMAND]`
 
@@ -50,9 +55,89 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.3/src/commands/help.ts)_
 
+## `ion key:new [KID]`
+
+Creates a new elliptic curve key for the specified curve, returning a JSON serialized and optionally escaped representation.
+
+```
+USAGE
+  $ ion key:new [KID]
+
+ARGUMENTS
+  KID  [default: key-1] identifier for the key (kid).
+
+OPTIONS
+  -h, --help                   show CLI help
+  --curve=(secp256k1|Ed25519)  [default: secp256k1] specifies the elliptic curve to use for the keys.
+
+  --escape                     specifies that the output JSON string should be escaped. Use this when using the output
+                               as input to another command.
+
+EXAMPLES
+  $ ion keys:new key-1
+  $ ion keys:new key-1 --curve secp256k1
+  $ ion keys:new key-1 --curve secp256k1 --escape
+```
+
+_See code: [src/commands/key/new.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/key/new.ts)_
+
+## `ion key:public JWK`
+
+Returns the public key JWK.
+
+```
+USAGE
+  $ ion key:public JWK
+
+ARGUMENTS
+  JWK  an escaped JSON string containing the private key jwk.
+
+OPTIONS
+  -h, --help  show CLI help
+
+  --escape    specifies that the output JSON string should be escaped. Use this when using the output as input to
+              another command.
+
+EXAMPLES
+  $ ion keys:public {ESCAPED JSON STRING}
+  $ ion keys:public {ESCAPED JSON STRING} --escape
+```
+
+_See code: [src/commands/key/public.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/key/public.ts)_
+
+## `ion load NAME`
+
+Creates a new ION DID with either defaults or the specified input.
+
+```
+USAGE
+  $ ion load NAME
+
+ARGUMENTS
+  NAME  name for the new DID. Name should not include spaces or special characters.
+
+OPTIONS
+  -d, --directory=directory                    (required) to which the DID package should be saved. Defaults to
+                                               environment variable DID_PATH if set.
+
+  -h, --help                                   show CLI help
+
+  --escape                                     specifies that the output JSON string should be escaped. Use this when
+                                               using the output as input to another command.
+
+  --what=(All|InitialState|CurrentState|Keys)  [default: All] specify the objects from the specified package to load.
+
+EXAMPLES
+  $ ion load FriendlyName
+  $ ion load FriendlyName -d d:/dids
+  $ ion load FriendlyName -d d:/dids --escape
+```
+
+_See code: [src/commands/load.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/load.ts)_
+
 ## `ion new NAME`
 
-Creates a new ION DID, optionally publishes to the network and writes the private key a *.jwk file and the DID to a *.json file.
+Creates a new ION DID with either defaults or the specified input.
 
 ```
 USAGE
@@ -63,30 +148,76 @@ ARGUMENTS
 
 OPTIONS
   -c, --curve=(secp256k1|Ed25519)  [default: secp256k1] specify the elliptic curve to use for the keys.
-  -d, --directory=directory        to which to save the *jwk and *.json files.
+
+  -d, --directory=directory        to which the DID package should be saved. Defaults to environment variable DID_PATH
+                                   if set.
+
   -h, --help                       show CLI help
-  -k, --kid=kid                    [default: key-1]  for the key pair
 
-  -n, --node=node                  URI of the node you desire to contact for resolution. If you are running your own
-                                   node, use this to pass in your node's resolution endpoint.
+  --escape                         specifies that the output JSON string should be escaped. Use this when using the
+                                   output as input to another command.
 
-  -p, --publish                    flag indicating whether the DID should be published to the ION network. Default is
-                                   false.
+  --input=input                    specifies the input to use when generating the ION DID.
+
+  --kid=kid                        [default: key-1]  for the key pair.
 
 EXAMPLES
   $ ion new FriendlyName
   $ ion new FriendlyName -d d:/dids
-  $ ion new FriendlyName -d d:/dids -c secp256k1
-  $ ion new FriendlyName -d d:/dids -c secp256k1 -p
-  $ ion new FriendlyName -d d:/dids -c secp256k1 -p -n https://node.local/1.0/identifiers/ 
-  $ ion new FriendlyName -d d:/dids -c secp256k1 -p -n https://node.local/1.0/identifiers/ -k key-1
+  $ ion new FriendlyName -d d:/dids --curve secp256k1 --kid key-1
+  $ ion new FriendlyName -d d:/dids --input {ESCAPED JSON STRING}
 ```
 
-_See code: [src/commands/new.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.2.0/src/commands/new.ts)_
+_See code: [src/commands/new.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/new.ts)_
+
+## `ion operation:create KEY [SERVICES]`
+
+Creates a payload for generating a new ION DID.
+
+```
+USAGE
+  $ ion operation:create KEY [SERVICES]
+
+ARGUMENTS
+  KEY       specifies the public key to use for the create operation.
+  SERVICES  specifies any services to be included in the create operation.
+
+OPTIONS
+  -h, --help  show CLI help
+
+  --escape    specifies that the output JSON string should be escaped. Use this when using the output as input to
+              another command.
+
+EXAMPLES
+  $ ion operation:create {ESCAPED KEY}
+  $ ion operation:create {ESCAPED KEY} {ESCAPED SERVICES} --escape
+```
+
+_See code: [src/commands/operation/create.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/operation/create.ts)_
+
+## `ion publish INITIALSTATE`
+
+Publishes the specified DID to the ION network.
+
+```
+USAGE
+  $ ion publish INITIALSTATE
+
+ARGUMENTS
+  INITIALSTATE  the initial state of the DID being published.
+
+OPTIONS
+  -h, --help  show CLI help
+
+EXAMPLE
+  $ ion publish {ESCAPED INITIAL STATE}
+```
+
+_See code: [src/commands/publish.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/publish.ts)_
 
 ## `ion resolve DID`
 
-Resolves the provided DID and outputs the document to the console.
+Resolves the provided DID and outputs the document to the console, optionally caching the DID state.
 
 ```
 USAGE
@@ -96,16 +227,32 @@ ARGUMENTS
   DID  The DID to resolve
 
 OPTIONS
-  -h, --help       show CLI help
+  -d, --directory=directory  to which the DID package should be saved. Defaults to environment variable DID_PATH if set.
+  -h, --help                 show CLI help
 
-  -n, --node=node  URI of the node you desire to contact for resolution. If you are running your own node, use this to
-                   pass in your node's resolution endpoint.
+  --cache                    specifies that the resolved document should be cached in the specified directory and if
+                             cached read from the directory.
 
-EXAMPLE
+  --cacheTtl=cacheTtl        [default: 86400] specifies the time to live (ttl) for a cached document in in seconds.
+
+  --escape                   specifies that the output JSON string should be escaped. Use this when using the output as
+                             input to another command.
+
+  --name=name                URI of the node you desire to contact for resolution. If you are running your own node, use
+                             this to pass in your node's resolution endpoint.
+
+  --node=node                URI of the node you desire to contact for resolution. If you are running your own node, use
+                             this to pass in your node's resolution endpoint.
+
+EXAMPLES
   $ ion resolve did:ion:EiB29JB4R0mbLmJ6_BEYjr8bGZKEPABwFopSNsDJBh_Diw
+  $ ion resolve did:ion:EiB29JB4R0mbLmJ6_BEYjr8bGZKEPABwFopSNsDJBh_Diw --node https://some.node --escape
+  $ ion resolve did:ion:EiB29JB4R0mbLmJ6_BEYjr8bGZKEPABwFopSNsDJBh_Diw --node https://some.node --cache
+  $ ion resolve did:ion:EiB29JB4R0mbLmJ6_BEYjr8bGZKEPABwFopSNsDJBh_Diw --node https://some.node --cache --cacheTtl 60 
+  --name SomeDID
 ```
 
-_See code: [src/commands/resolve.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.2.0/src/commands/resolve.ts)_
+_See code: [src/commands/resolve.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/resolve.ts)_
 
 ## `ion sign PAYLOAD FRIENDLYNAME`
 
@@ -120,9 +267,13 @@ ARGUMENTS
   FRIENDLYNAME  of the DID to use to sign the payload
 
 OPTIONS
-  -d, --directory=directory  (required) from which to read DID and key.
+  -d, --directory=directory  (required) from which to read DID and key. Defaults to environment variable DID_PATH if
+                             set.
+
   -h, --help                 show CLI help
+
   -k, --kid=kid              [default: key-1]  of the private key to use for signing.
+
   -s, --detached             flag indicating a payload-detached JWS should be output. Default is false.
 
 EXAMPLES
@@ -132,37 +283,30 @@ EXAMPLES
   $ ion sign 'Hello World' FriendlyName -d d:/dids -k 'key-1' -s -n https://node.local/1.0/identifiers/
 ```
 
-_See code: [src/commands/sign.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.2.0/src/commands/sign.ts)_
+_See code: [src/commands/sign.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/sign.ts)_
 
-## `ion verify JWS FRIENDLYNAME [PAYLOAD]`
+## `ion verify JWS DOCUMENT [PAYLOAD]`
 
-Sign payload using the private key associated with the specified DID.
+Verify payload using the private key associated with the specified DID.
 
 ```
 USAGE
-  $ ion verify JWS FRIENDLYNAME [PAYLOAD]
+  $ ion verify JWS DOCUMENT [PAYLOAD]
 
 ARGUMENTS
-  JWS           signature to verify.
-  FRIENDLYNAME  of the DID to use to verify the signature
-  PAYLOAD       when verifying a payload-detached JWS
+  JWS       signature to verify.
+  DOCUMENT  the escaped DID document of the entity that signed the payload.
+  PAYLOAD   when verifying a payload-detached JWS
 
 OPTIONS
-  -d, --directory=directory  (required) from which to read DID and key.
-  -h, --help                 show CLI help
-  -s, --detached             flag indicating a payload-detached JWS should be output. Default is false.
+  -h, --help  show CLI help
+  --kid=kid   identifier of the public key to use for verifying.
 
-EXAMPLES
-  $ ion verify 
-  '2tleS0xIiwiYWxnIjoiRVMyNTZLIn0.ImhlbGxvIHdvcmxkIg.D7kXXnQmtSw1WX1RCW3IzA6T5-qivSOL2_6RVydIo1Z_wXKO00GEUl2xjwvRpHlr4B7
-  jBy1_PZenCNP9_mWx1Q' FriendlyName -d d:/dids
-  $ ion verify 
-  '2tleS0xIiwiYWxnIjoiRVMyNTZLIn0.ImhlbGxvIHdvcmxkIg.D7kXXnQmtSw1WX1RCW3IzA6T5-qivSOL2_6RVydIo1Z_wXKO00GEUl2xjwvRpHlr4B7
-  jBy1_PZenCNP9_mWx1Q' FriendlyName -d d:/dids
+EXAMPLE
   $ ion verify 
   '2tleS0xIiwiYWxnIjoiRVMyNTZLIn0..D7kXXnQmtSw1WX1RCW3IzA6T5-qivSOL2_6RVydIo1Z_wXKO00GEUl2xjwvRpHlr4B7jBy1_PZenCNP9_mWx1
-  Q' FriendlyName 'hello world' -d d:/dids
+  Q' '{ESCAPED DID DOCUMENT}' 'hello world' -k '#key-1'
 ```
 
-_See code: [src/commands/verify.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.2.0/src/commands/verify.ts)_
+_See code: [src/commands/verify.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/verify.ts)_
 <!-- commandsstop -->
