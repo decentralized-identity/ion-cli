@@ -1,7 +1,7 @@
 {
   "name": "@decentralized-identity/ion-cli",
   "description": "A Command Line Interface (CLI) to make working with the ION network and using ION DIDs easy peasy lemon squeezy.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "Decentralized Identity Foundation",
   "bin": {
     "ion": "./bin/run"
@@ -13,7 +13,9 @@
     "clear": "^0.1.0",
     "tslib": "^1.14.1",
     "@decentralized-identity/ion-tools": "0.1.0",
-    "cli-ux": "5.6.3"
+    "cli-ux": "5.6.3",
+    "jsonpath": "1.1.1",
+    "class-transformer": "0.4.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
@@ -24,7 +26,8 @@
     "globby": "^10.0.2",
     "rimraf": "^3.0.2",
     "ts-node": "^8.10.2",
-    "typescript": "^3.9.10"
+    "typescript": "^3.9.10",
+    "@types/jsonpath": "0.2.0"
   },
   "engines": {
     "node": ">=8.0.0"
