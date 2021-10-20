@@ -27,6 +27,8 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`ion cache:clear`](#ion-cacheclear)
+* [`ion cache:list`](#ion-cachelist)
 * [`ion help [COMMAND]`](#ion-help-command)
 * [`ion key:new [KID]`](#ion-keynew-kid)
 * [`ion key:public JWK`](#ion-keypublic-jwk)
@@ -37,6 +39,50 @@ USAGE
 * [`ion resolve DID`](#ion-resolve-did)
 * [`ion sign PAYLOAD FRIENDLYNAME`](#ion-sign-payload-friendlyname)
 * [`ion verify JWS DOCUMENT [PAYLOAD]`](#ion-verify-jws-document-payload)
+
+## `ion cache:clear`
+
+Clears the DID cache, removing all previously resolved DIDs.
+
+```
+USAGE
+  $ ion cache:clear
+
+OPTIONS
+  -d, --directory=directory  (required) that contains the cache. Defaults to environment variable DID_PATH if set.
+  -h, --help                 show CLI help
+
+EXAMPLE
+  $ ion cache:clear -d d:dids
+```
+
+_See code: [src/commands/cache/clear.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/cache/clear.ts)_
+
+## `ion cache:list`
+
+Lists the cached DIDs.
+
+```
+USAGE
+  $ ion cache:list
+
+OPTIONS
+  -d, --directory=directory  (required) that contains the cache. Defaults to environment variable DID_PATH if set.
+  -h, --help                 show CLI help
+  -x, --extended             show extra columns
+  --columns=columns          only show provided columns (comma-separated)
+  --csv                      output is csv format [alias: --output=csv]
+  --filter=filter            filter property by partial string matching, ex: name=foo
+  --no-header                hide table header from output
+  --no-truncate              do not truncate output to fit screen
+  --output=csv|json|yaml     output in a more machine friendly format
+  --sort=sort                property to sort by (prepend '-' for descending)
+
+EXAMPLE
+  $ ion cache:list -d d:dids
+```
+
+_See code: [src/commands/cache/list.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/cache/list.ts)_
 
 ## `ion help [COMMAND]`
 
@@ -74,9 +120,9 @@ OPTIONS
                                as input to another command.
 
 EXAMPLES
-  $ ion keys:new key-1
-  $ ion keys:new key-1 --curve secp256k1
-  $ ion keys:new key-1 --curve secp256k1 --escape
+  $ ion key:new key-1
+  $ ion key:new key-1 --curve secp256k1
+  $ ion key:new key-1 --curve secp256k1 --escape
 ```
 
 _See code: [src/commands/key/new.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/key/new.ts)_
@@ -99,15 +145,15 @@ OPTIONS
               another command.
 
 EXAMPLES
-  $ ion keys:public {ESCAPED JSON STRING}
-  $ ion keys:public {ESCAPED JSON STRING} --escape
+  $ ion key:public {ESCAPED JSON STRING}
+  $ ion key:public {ESCAPED JSON STRING} --escape
 ```
 
 _See code: [src/commands/key/public.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/key/public.ts)_
 
 ## `ion load NAME`
 
-Creates a new ION DID with either defaults or the specified input.
+Loads a DID from the directory using the friendly name.
 
 ```
 USAGE
@@ -117,15 +163,15 @@ ARGUMENTS
   NAME  name for the new DID. Name should not include spaces or special characters.
 
 OPTIONS
-  -d, --directory=directory                    (required) to which the DID package should be saved. Defaults to
-                                               environment variable DID_PATH if set.
+  -d, --directory=directory       (required) to which the DID should be saved. Defaults to environment variable DID_PATH
+                                  if set.
 
-  -h, --help                                   show CLI help
+  -h, --help                      show CLI help
 
-  --escape                                     specifies that the output JSON string should be escaped. Use this when
-                                               using the output as input to another command.
+  --escape                        specifies that the output JSON string should be escaped. Use this when using the
+                                  output as input to another command.
 
-  --what=(All|InitialState|CurrentState|Keys)  [default: All] specify the objects from the specified package to load.
+  --what=(All|InitialState|Keys)  [default: All] specify the objects from the specified package to load.
 
 EXAMPLES
   $ ion load FriendlyName
@@ -159,13 +205,15 @@ OPTIONS
 
   --input=input                    specifies the input to use when generating the ION DID.
 
+  --jwk=jwk                        specifies the private key for the DID.
+
   --kid=kid                        [default: key-1]  for the key pair.
 
 EXAMPLES
   $ ion new FriendlyName
   $ ion new FriendlyName -d d:/dids
   $ ion new FriendlyName -d d:/dids --curve secp256k1 --kid key-1
-  $ ion new FriendlyName -d d:/dids --input {ESCAPED JSON STRING}
+  $ ion new FriendlyName -d d:/dids --input {ESCAPED JSON STRING} --key {ESCAPED PRIVATE KEY JWK}
 ```
 
 _See code: [src/commands/new.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.0/src/commands/new.ts)_

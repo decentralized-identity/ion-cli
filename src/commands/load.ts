@@ -1,10 +1,10 @@
 import { Command, flags } from '@oclif/command';
 import Output from '../Output';
-import Package from '../Package';
+import StorageItem from '../StorageItem';
 const { cli } = require('cli-ux');
 
 export default class Load extends Command {
-  public static description = 'Creates a new ION DID with either defaults or the specified input.';
+  public static description = 'Loads a DID from the directory using the friendly name.';
 
   public static examples = [
     '$ ion load FriendlyName',
@@ -16,10 +16,10 @@ export default class Load extends Command {
     help: flags.help({ char: 'h' }),
 
     // Flag for specifying a directory to which keys and documents should be saved.
-    directory: flags.string({ char: 'd', description: 'to which the DID package should be saved. Defaults to environment variable DID_PATH if set.', env: 'DID_PATH', required: true }),
+    directory: flags.string({ char: 'd', description: 'to which the DID should be saved. Defaults to environment variable DID_PATH if set.', env: 'DID_PATH', required: true }),
 
     // Flag for specifying what specific objects to load from the package
-    what: flags.enum({ description: 'specify the objects from the specified package to load.', options: ['All', 'InitialState', 'CurrentState', 'Keys'], default: 'All' }),
+    what: flags.enum({ description: 'specify the objects from the specified package to load.', options: ['All', 'InitialState', 'Keys'], default: 'All' }),
 
     // Flag for specifying the JSON string output should be escaped.
     escape: flags.boolean({ description: 'specifies that the output JSON string should be escaped. Use this when using the output as input to another command.' }),
@@ -38,16 +38,13 @@ export default class Load extends Command {
 
     // Load the DID and return
     cli.action.start(`Loading DID '${args.name}' from '${flags.directory}'.`);
-    const didPackage: Package = await Package.loadPackage(flags.directory, args.name);
+    const didPackage: StorageItem = await StorageItem.load(flags.directory, args.name);
     cli.action.stop();
 
     let packageSubset;
     switch (flags.what) {
       case 'InitialState':
         packageSubset = didPackage.initialState;
-        break;
-      case 'CurrentState':
-        packageSubset = didPackage.currentState;
         break;
       case 'Keys':
         packageSubset = didPackage.keys;
@@ -56,7 +53,7 @@ export default class Load extends Command {
         packageSubset = didPackage;
     }
 
-    this.log(Output.toJsonString(packageSubset, flags.escape));
+    this.log(Output.toJson(packageSubset, flags.escape));
     this.exit();
   }
 }

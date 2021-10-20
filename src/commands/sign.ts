@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import cli from 'cli-ux';
-import Package from '../Package';
+import StorageItem from '../StorageItem';
 
 const ION = require('@decentralized-identity/ion-tools');
 
@@ -44,8 +44,8 @@ export default class Sign extends Command {
     const { args, flags } = this.parse(Sign);
 
     // Load the did package from the directory
-    cli.action.start(`Loading DID package with name '${args.friendlyName}' from directory path '${flags.directory}.'`);
-    const didPackage = await Package.loadPackage(flags.directory, args.friendlyName);
+    cli.action.start(`Loading DID with name '${args.friendlyName}' from directory path '${flags.directory}.'`);
+    const didPackage = await StorageItem.load(flags.directory, args.friendlyName);
     cli.action.stop();
 
     // Create the ION did instance

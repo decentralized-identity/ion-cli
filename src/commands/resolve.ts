@@ -1,8 +1,6 @@
 import { Command, flags } from '@oclif/command';
-import * as path from 'path';
-import CurrentState from '../CurrentState';
+import CacheItem from '../CacheItem';
 import Output from '../Output';
-import Package from '../Package';
 const ION = require('@decentralized-identity/ion-tools');
 const { cli } = require('cli-ux');
 
@@ -52,7 +50,7 @@ export default class Resolve extends Command {
    * @param refreshedAt date and time the state was last refreshed.
    * @param timeToLive to determine whether the state should be refreshed.
    */
-  private static refreshState (refreshedAt: Date, timeToLive: number): boolean {
+  private static isExpired (refreshedAt: Date, timeToLive: number): boolean {
     const now = Date.now() / 1000;
     const nextRefresh = new Date(refreshedAt).getTime() / 1000 + timeToLive;
     return (nextRefresh <= now);
@@ -74,45 +72,43 @@ export default class Resolve extends Command {
     cli.action.start('Resolving DID');
     if (flags.cache) {
       cli.action.start('Checking DID cache');
-      const cacheDirectory = path.join(flags.directory!, 'cache');
-
-      if (Package.exists(cacheDirectory, flags.name!)) {
+      const cachedItem = await CacheItem.read(flags.directory!, flags.name!);
+      if (cachedItem) {
         cli.action.stop('DID found in cache.');
-        const didPackage = await Package.loadPackage(cacheDirectory, flags.name!);
+        cli.action.start('Checking expiry.');
+        const isExpired = Resolve.isExpired(cachedItem.lastResolved, flags.cacheTtl);
+        if (isExpired){
+          cli.action.stop('cache item expired. Resolving DID.');
+          didDocument = await ION.resolve(args.DID, options);
 
-        // Check if the package has a state entry
-        if (didPackage.currentState) {
-          cli.action.start('Checking DID cache TTL.');
-          // Check if the state should be refreshed.
-          const refresh = Resolve.refreshState(didPackage.currentState.refreshedAt, flags.cacheTtl);
-
-          if (refresh) {
-            cli.action.stop('cache expired. Refreshing DID.');
-            didDocument = await ION.resolve(args.DID, options);
-            // Update the state in the package
-            didPackage.currentState = new CurrentState(didDocument, new Date());
-            await didPackage.savePackage(cacheDirectory);
-            cli.action.stop();
-          } else {
-            cli.action.stop('Returning cached DID.');
-            // Return the document from the state
-            didDocument = didPackage.currentState.document;
-          }
+          // Update the cache item and then save
+          cachedItem.document = didDocument;
+          cachedItem.lastResolved = new Date();
+          cachedItem.published = didDocument?.didDocumentMetadata?.method?.published ?? 'N/A';
+          await cachedItem.save(flags.directory!);
+          cli.action.stop();
+        } else {
+          cli.action.stop('returning cached DID.');
+          // Return the document from the state
+          didDocument = cachedItem.document;
         }
       } else {
         cli.action.stop('DID not in cache.');
         // Never resolved before, so resolve first then
-        // create a package and save state
+        // create a cache item and save
         didDocument = await ION.resolve(args.DID, options);
-        const newPackage = new Package(
+
+        const newCacheItem = new CacheItem(
           flags.name!,
           args.DID,
-          [],
-          new CurrentState(didDocument, new Date()));
+          didDocument,
+          new Date(),
+          didDocument.didDocumentMetadata.method.published
+        )
         cli.action.stop();
 
         cli.action.start('Caching DID.');
-        await newPackage.savePackage(cacheDirectory);
+        await newCacheItem.save(flags.directory!);
         cli.action.stop();
       }
     } else {
@@ -120,6 +116,6 @@ export default class Resolve extends Command {
     }
 
     cli.action.stop();
-    this.log(Output.toJsonString(didDocument, flags.escape));
+    this.log(Output.toJson(didDocument, flags.escape));
   }
 }
