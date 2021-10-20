@@ -1,7 +1,7 @@
 {
   "name": "@decentralized-identity/ion-cli",
   "description": "A Command Line Interface (CLI) to make working with the ION network and using ION DIDs easy peasy lemon squeezy.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "Decentralized Identity Foundation",
   "bin": {
     "ion": "./bin/run"
