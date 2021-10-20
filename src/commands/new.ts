@@ -27,7 +27,7 @@ export default class New extends Command {
     kid: flags.string({ description: ' for the key pair.', default: 'key-1', exclusive: ['input', 'jwk'] }),
 
     // Flag for specifying the input to use when creating a new DID.
-    input: flags.string({ description: 'specifies the input to use when generating the ION DID.', exclusive: ['curve', 'kid'], dependsOn: ['key'] }),
+    input: flags.string({ description: 'specifies the input to use when generating the ION DID.', exclusive: ['curve', 'kid'], dependsOn: ['jwk'] }),
 
     // Flag for specifying the private key for the DID if the input flag is being used
     jwk: flags.string({ description: 'specifies the private key for the DID.', exclusive: ['curve', 'kid'], dependsOn:['input'] }),
