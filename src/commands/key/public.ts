@@ -6,15 +6,16 @@ export default class Public extends Command {
   public static description = 'Returns the public key JWK.';
 
   public static examples = [
-    '$ ion keys:public {ESCAPED JSON STRING}',
-    '$ ion keys:public {ESCAPED JSON STRING} --escape',
+    '$ ion key:public {ESCAPED JSON STRING}',
+    '$ ion key:public {ESCAPED JSON STRING} --escape',
   ];
 
   public static flags = {
     help: flags.help({ char: 'h' }),
 
     // Flag for specifying the JSON string output should be escaped.
-    escape: flags.boolean({ description: 'specifies that the output JSON string should be escaped. Use this when using the output as input to another command.' }),
+    escape: flags.boolean(
+      { description: 'specifies that the output JSON string should be escaped. Use this when using the output as input to another command.' }),
   };
 
   public static args = [
@@ -33,7 +34,7 @@ export default class Public extends Command {
     cli.action.start('Returning public key JWK');
     const privateJwk = JSON.parse(args.jwk);
     const { d, ...publicJwk } = privateJwk;
-    const publicKeyJson = Output.toJsonString({ ...publicJwk }, flags.escape);
+    const publicKeyJson = Output.toJson({ ...publicJwk }, flags.escape);
     cli.action.stop();
     this.log(publicKeyJson);
     this.exit();

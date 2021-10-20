@@ -1,9 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import Output from '../../Output';
-const ION = require('@decentralized-identity/ion-tools');
 const { cli } = require('cli-ux');
-const fs = require('fs/promises');
-const path = require('path');
 
 export default class Create extends Command {
   public static description = 'Creates a payload for generating a new ION DID.';
@@ -15,12 +12,6 @@ export default class Create extends Command {
 
   public static flags = {
     help: flags.help({ char: 'h' }),
-
-    // Flag for passing in a public key for including in the input
-    //key: flags.string({ description: 'specifies the public key to use for the input.', required: true }),
-
-    // Flag for passing services for including in the input
-    //services: flags.string({ description: 'specifies any services to be included in the create.' }),
 
     // Flag for specifying the JSON string output should be escaped.
     escape: flags.boolean({ description: 'specifies that the output JSON string should be escaped. Use this when using the output as input to another command.' }),
@@ -68,7 +59,7 @@ export default class Create extends Command {
       input.content = Object.assign(input.content, JSON.parse(args.services));
     }
 
-    const inputJson = Output.toJsonString(input, flags.escape);
+    const inputJson = Output.toJson(input, flags.escape);
     cli.action.stop();
     this.log(inputJson);
     this.exit();

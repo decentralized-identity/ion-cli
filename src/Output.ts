@@ -12,8 +12,8 @@ export default class Output {
    * @param [escape] indicating whether the output should be escaped.
    * @returns the JSON string optionally escaped.
    */
-  public static toJsonString (object: any, escape?: boolean): string {
-    const privateKeyJson = JSON.stringify(object, null, 2);
-    return escape ? privateKeyJson.replace(ESCAPE_REGEX, '\\\"') : privateKeyJson;
+  public static toJson (object: any, escape?: boolean): string {
+    const json = JSON.stringify(object, null, 2);
+    return escape ? json.replace(ESCAPE_REGEX, '\\\"') : json;
   }
 }

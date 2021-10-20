@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import cli from 'cli-ux';
-import Package from '../Package';
+import StorageItem from '../StorageItem';
 
 const ION = require('@decentralized-identity/ion-tools');
 
@@ -44,17 +44,17 @@ export default class Sign extends Command {
     const { args, flags } = this.parse(Sign);
 
     // Load the did package from the directory
-    cli.action.start(`Loading DID package with name '${args.friendlyName}' from directory path '${flags.directory}.'`);
-    const didPackage = await Package.loadPackage(flags.directory, args.friendlyName);
+    cli.action.start(`Loading DID with name '${args.friendlyName}' from directory path '${flags.directory}.'`);
+    const storageItem = await StorageItem.load(flags.directory, args.friendlyName);
     cli.action.stop();
 
     // Create the ION did instance
-    const did = new ION.DID(didPackage.initialState);
+    const did = new ION.DID(storageItem.initialState);
 
     cli.action.start(`Signing payload using '${flags.kid}'.`);
     const jws = await ION.signJws({
       payload: args.payload,
-      privateJwk: didPackage.keys,
+      privateJwk: storageItem.keys,
       header: { kid: `${await did.getURI()}#${flags.kid}` },
       detached: flags.detached,
     });

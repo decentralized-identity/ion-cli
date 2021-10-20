@@ -7,9 +7,9 @@ export default class New extends Command {
   public static description = 'Creates a new elliptic curve key for the specified curve, returning a JSON serialized and optionally escaped representation.';
 
   public static examples = [
-    '$ ion keys:new key-1',
-    '$ ion keys:new key-1 --curve secp256k1',
-    '$ ion keys:new key-1 --curve secp256k1 --escape',
+    '$ ion key:new key-1',
+    '$ ion key:new key-1 --curve secp256k1',
+    '$ ion key:new key-1 --curve secp256k1 --escape',
   ];
 
   public static flags = {
@@ -41,7 +41,7 @@ export default class New extends Command {
 
     // Mix in the kid
     const privateKey = Object.assign({ kid: args.kid }, keyPair.privateJwk);
-    const privateKeyJson = Output.toJsonString(privateKey, flags.escape);
+    const privateKeyJson = Output.toJson(privateKey, flags.escape);
     cli.action.stop();
     this.log(privateKeyJson);
     this.exit();
