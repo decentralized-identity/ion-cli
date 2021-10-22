@@ -1,7 +1,7 @@
 {
   "name": "@decentralized-identity/ion-cli",
   "description": "A Command Line Interface (CLI) to make working with the ION network and using ION DIDs easy peasy lemon squeezy.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": "Decentralized Identity Foundation",
   "bin": {
     "ion": "./bin/run"
@@ -20,16 +20,16 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
+    "@types/fs-extra": "9.0.13",
+    "@types/jsonpath": "0.2.0",
     "@types/node": "^16.10.3",
-    "eslint": "^5.16.0",
+    "eslint": "^8.0.1",
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-oclif-typescript": "^0.1.0",
     "globby": "^10.0.2",
     "rimraf": "^3.0.2",
     "ts-node": "^8.10.2",
-    "typescript": "^3.9.10",
-    "@types/jsonpath": "0.2.0",
-    "@types/fs-extra": "9.0.13"
+    "typescript": "^3.9.10"
   },
   "engines": {
     "node": ">=8.0.0"
