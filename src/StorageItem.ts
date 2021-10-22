@@ -30,7 +30,7 @@ export default class StorageItem {
   }
 
   /**
-   * Checks if the specified package exists.
+   * Checks if the specified storage item exists.
    * @param directory from which to load the storage item.
    * @param name of the storage item to load.
    */
@@ -44,8 +44,8 @@ export default class StorageItem {
     }
 
     // Check if the file exists.
-    const packagePath = path.join(directory, `${name}.json`);
-    return fs.existsSync(packagePath);
+    const storageItemPath = path.join(directory, `${name}.json`);
+    return fs.existsSync(storageItemPath);
   }
 
   /**

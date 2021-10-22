@@ -63,11 +63,7 @@ export default class New extends Command {
 
       // Mix in the kid
       privateKey = Object.assign({ kid: flags.kid }, keyPair.privateJwk);
-
       cli.action.stop();
-      console.log(
-        Output.toJson(keyPair),
-      );
 
       // Now generate the DID using the new key
       cli.action.start('Creating new ION DID');
