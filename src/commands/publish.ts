@@ -23,7 +23,15 @@ export default class Publish extends Command {
   public async run () {
     const { args } = this.parse(Publish);
 
-    const jsonInitialState = JSON.parse(args.initialState);
+    // Check if we have been passed a storage item and extract
+    // the initial state, before checking that the initial state
+    // conating the expected properties. 
+    const initialState = args.initialState.initialState ? args.initialState.initialState : args.initialState;
+    if (!initialState.longForm || !initialState.ops || initialState.ops.length === 0) {
+      throw new Error(`The initialState argument provided does not include the expected properties.`);
+    }
+
+    const jsonInitialState = JSON.parse(initialState);
     const did = new ION.DID(jsonInitialState);
     const requestBody = await did.generateRequest();
     const request = new ION.AnchorRequest(requestBody);
