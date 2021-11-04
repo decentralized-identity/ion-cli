@@ -67,9 +67,9 @@ export default class Publish extends Command {
    
     // Now submit the anchoring request
     await request.submit();
-    if (didPackage! && updateStorageItem) {
-      didPackage.published = true;
-      didPackage.save(flags.directory!);
+    if (updateStorageItem) {
+      didPackage!.published = true;
+      didPackage!.save(flags.directory!);
     }
           
     cli.action.stop();

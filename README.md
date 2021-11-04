@@ -35,7 +35,7 @@ USAGE
 * [`ion load NAME`](#ion-load-name)
 * [`ion new NAME`](#ion-new-name)
 * [`ion operation:create KEY [SERVICES]`](#ion-operationcreate-key-services)
-* [`ion publish INITIALSTATE`](#ion-publish-initialstate)
+* [`ion publish [INITIALSTATE]`](#ion-publish-initialstate)
 * [`ion resolve DID`](#ion-resolve-did)
 * [`ion sign PAYLOAD FRIENDLYNAME`](#ion-sign-payload-friendlyname)
 * [`ion verify JWS DOCUMENT [PAYLOAD]`](#ion-verify-jws-document-payload)
@@ -243,22 +243,24 @@ EXAMPLES
 
 _See code: [src/commands/operation/create.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/operation/create.ts)_
 
-## `ion publish INITIALSTATE`
+## `ion publish [INITIALSTATE]`
 
 Publishes the specified DID to the ION network.
 
 ```
 USAGE
-  $ ion publish INITIALSTATE
+  $ ion publish [INITIALSTATE]
 
 ARGUMENTS
   INITIALSTATE  the initial state of the DID being published.
 
 OPTIONS
-  -h, --help  show CLI help
+  -d, --directory=directory    to which the DID should be saved. Defaults to environment variable DID_PATH if set.
+  -h, --help                   show CLI help
+  --friendlyName=friendlyName  specifies the friendly name of the DID to load and publish.
 
 EXAMPLE
-  $ ion publish {ESCAPED INITIAL STATE}
+  $ ion publish {ESCAPED INITIAL STATE} --friendlyName={FRIENDLY_NAME}
 ```
 
 _See code: [src/commands/publish.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/publish.ts)_
