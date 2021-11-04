@@ -43,19 +43,26 @@ export default class Sign extends Command {
   public async run () {
     const { args, flags } = this.parse(Sign);
 
-    // Load the did package from the directory
+    // Load the did package from the directory.
     cli.action.start(`Loading DID with name '${args.friendlyName}' from directory path '${flags.directory}.'`);
     const storageItem = await StorageItem.load(flags.directory, args.friendlyName);
     cli.action.stop();
 
-    // Create the ION did instance
+    // Create the ION did instance.
     const did = new ION.DID(storageItem.initialState);
+
+    // Determine whether to use the short or long form
+    // DID in as the key identifier prefix based on whether
+    // the DID has been published.
+    const kidPrefix = storageItem.published ? 
+      storageItem.initialState.shortForm :
+      storageItem.initialState.longForm;
 
     cli.action.start(`Signing payload using '${flags.kid}'.`);
     const jws = await ION.signJws({
       payload: args.payload,
       privateJwk: storageItem.keys,
-      header: { kid: `${await did.getURI()}#${flags.kid}` },
+      header: { kid: `${kidPrefix}#${flags.kid}` },
       detached: flags.detached,
     });
     cli.action.stop();

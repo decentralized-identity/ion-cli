@@ -18,7 +18,7 @@ $ npm install -g @decentralized-identity/ion-cli
 $ ion COMMAND
 running command...
 $ ion (-v|--version|version)
-@decentralized-identity/ion-cli/0.3.2 win32-x64 node-v14.17.6
+@decentralized-identity/ion-cli/0.3.3 win32-x64 node-v14.17.6
 $ ion --help [COMMAND]
 USAGE
   $ ion COMMAND
@@ -35,7 +35,7 @@ USAGE
 * [`ion load NAME`](#ion-load-name)
 * [`ion new NAME`](#ion-new-name)
 * [`ion operation:create KEY [SERVICES]`](#ion-operationcreate-key-services)
-* [`ion publish INITIALSTATE`](#ion-publish-initialstate)
+* [`ion publish [INITIALSTATE]`](#ion-publish-initialstate)
 * [`ion resolve DID`](#ion-resolve-did)
 * [`ion sign PAYLOAD FRIENDLYNAME`](#ion-sign-payload-friendlyname)
 * [`ion verify JWS DOCUMENT [PAYLOAD]`](#ion-verify-jws-document-payload)
@@ -56,7 +56,7 @@ EXAMPLE
   $ ion cache:clear -d d:dids
 ```
 
-_See code: [src/commands/cache/clear.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.2/src/commands/cache/clear.ts)_
+_See code: [src/commands/cache/clear.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/cache/clear.ts)_
 
 ## `ion cache:list`
 
@@ -82,7 +82,7 @@ EXAMPLE
   $ ion cache:list -d d:dids
 ```
 
-_See code: [src/commands/cache/list.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.2/src/commands/cache/list.ts)_
+_See code: [src/commands/cache/list.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/cache/list.ts)_
 
 ## `ion help [COMMAND]`
 
@@ -125,7 +125,7 @@ EXAMPLES
   $ ion key:new key-1 --curve secp256k1 --escape
 ```
 
-_See code: [src/commands/key/new.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.2/src/commands/key/new.ts)_
+_See code: [src/commands/key/new.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/key/new.ts)_
 
 ## `ion key:public JWK`
 
@@ -149,7 +149,7 @@ EXAMPLES
   $ ion key:public {ESCAPED JSON STRING} --escape
 ```
 
-_See code: [src/commands/key/public.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.2/src/commands/key/public.ts)_
+_See code: [src/commands/key/public.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/key/public.ts)_
 
 ## `ion load NAME`
 
@@ -179,7 +179,7 @@ EXAMPLES
   $ ion load FriendlyName -d d:/dids --escape
 ```
 
-_See code: [src/commands/load.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.2/src/commands/load.ts)_
+_See code: [src/commands/load.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/load.ts)_
 
 ## `ion new NAME`
 
@@ -216,7 +216,7 @@ EXAMPLES
   $ ion new FriendlyName -d d:/dids --input {ESCAPED JSON STRING} --key {ESCAPED PRIVATE KEY JWK}
 ```
 
-_See code: [src/commands/new.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.2/src/commands/new.ts)_
+_See code: [src/commands/new.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/new.ts)_
 
 ## `ion operation:create KEY [SERVICES]`
 
@@ -241,27 +241,29 @@ EXAMPLES
   $ ion operation:create {ESCAPED KEY} {ESCAPED SERVICES} --escape
 ```
 
-_See code: [src/commands/operation/create.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.2/src/commands/operation/create.ts)_
+_See code: [src/commands/operation/create.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/operation/create.ts)_
 
-## `ion publish INITIALSTATE`
+## `ion publish [INITIALSTATE]`
 
 Publishes the specified DID to the ION network.
 
 ```
 USAGE
-  $ ion publish INITIALSTATE
+  $ ion publish [INITIALSTATE]
 
 ARGUMENTS
   INITIALSTATE  the initial state of the DID being published.
 
 OPTIONS
-  -h, --help  show CLI help
+  -d, --directory=directory    to which the DID should be saved. Defaults to environment variable DID_PATH if set.
+  -h, --help                   show CLI help
+  --friendlyName=friendlyName  specifies the friendly name of the DID to load and publish.
 
 EXAMPLE
-  $ ion publish {ESCAPED INITIAL STATE}
+  $ ion publish {ESCAPED INITIAL STATE} --friendlyName={FRIENDLY_NAME}
 ```
 
-_See code: [src/commands/publish.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.2/src/commands/publish.ts)_
+_See code: [src/commands/publish.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/publish.ts)_
 
 ## `ion resolve DID`
 
@@ -300,7 +302,7 @@ EXAMPLES
   --name SomeDID
 ```
 
-_See code: [src/commands/resolve.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.2/src/commands/resolve.ts)_
+_See code: [src/commands/resolve.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/resolve.ts)_
 
 ## `ion sign PAYLOAD FRIENDLYNAME`
 
@@ -331,7 +333,7 @@ EXAMPLES
   $ ion sign 'Hello World' FriendlyName -d d:/dids -k 'key-1' -s -n https://node.local/1.0/identifiers/
 ```
 
-_See code: [src/commands/sign.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.2/src/commands/sign.ts)_
+_See code: [src/commands/sign.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/sign.ts)_
 
 ## `ion verify JWS DOCUMENT [PAYLOAD]`
 
@@ -356,5 +358,5 @@ EXAMPLE
   Q' '{ESCAPED DID DOCUMENT}' 'hello world' -k '#key-1'
 ```
 
-_See code: [src/commands/verify.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.2/src/commands/verify.ts)_
+_See code: [src/commands/verify.ts](https://github.com/decentralized-identity/ion-cli/blob/v0.3.3/src/commands/verify.ts)_
 <!-- commandsstop -->

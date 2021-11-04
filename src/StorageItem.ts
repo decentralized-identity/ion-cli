@@ -11,13 +11,19 @@ export default class StorageItem {
   /**
    * Storage item version.
    */
-  public readonly version: string = 'v0.2.0';
+  public readonly version: string = 'v0.2.1';
 
   /**
    * Date indicating the date and time
    * the storage was created.
    */
   public readonly created: Date;
+
+  /**
+   * Flag indicating whether the DID has been
+   * published to the network.
+   */
+  public published: boolean = false;
 
   /**
    * Constructs a new instance on the @see StorageItem class.
