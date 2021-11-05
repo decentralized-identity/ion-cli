@@ -11,7 +11,7 @@ export default class New extends Command {
     '$ ion new FriendlyName',
     '$ ion new FriendlyName -d d:/dids',
     '$ ion new FriendlyName -d d:/dids --curve secp256k1 --kid key-1',
-    '$ ion new FriendlyName -d d:/dids --input {ESCAPED JSON STRING} --key {ESCAPED PRIVATE KEY JWK}',
+    '$ ion new FriendlyName -d d:/dids --input {ESCAPED JSON STRING} --jwk {ESCAPED PRIVATE KEY JWK}',
   ];
 
   public static flags = {
